@@ -18,7 +18,7 @@ function GetKeyValues($fileContent)
     for($i=0; $i -lt $fileContent.Length; $i++)
     {
         $keyvalue = ($fileContent[$i] -split '=',2).trim()
-		Write-Host "Found Key: " $keyvalue[0]
+		Write-Host "Found Key: " $keyvalue[0] -ForegroundColor Green
 		$keyvalues.Add($keyvalue[0],$keyvalue[1])
     }
 
@@ -46,15 +46,15 @@ try {
     Assert-VstsPath -LiteralPath $cwd -PathType Container
     Write-Verbose "Setting working directory to '$cwd'."
     Set-Location $cwd
-	
-	if (-not (test-path "c:\terraform-download"))
+	$tPath = "c:\terraform-download"
+	if (-not (test-path $tPath))
 	{
-		Write-Host "Terraform not found in c:\terraform-download"
+		Write-Host "Terraform not found in $tPath"
 		terraform output > terraform-outputs.txt
 	} else 
 	{
-		Write-Host "Terraform found in c:\terraform-download"
-		iex "c:\terraform-download\terraform output > terraform-outputs.txt"
+		Write-Host "Terraform found in $tPath"
+		iex "$tPath\terraform output > terraform-outputs.txt"
 	}
 	
 	##$tfOutputFile = Get-VstsInput -Name File -Require
@@ -63,9 +63,7 @@ try {
 
 	GetKeyValues $fileContent
 	SetEnvironmentVariables
-		
-    Write-Host "Result:  $value" -ForegroundColor Green
-		
+	
     # Output the message to the log.
     ##Write-Host (Get-VstsInput -Name msg)
 } finally {
